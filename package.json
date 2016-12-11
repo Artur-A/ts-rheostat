@@ -1,6 +1,6 @@
 {
   "name": "ts-rheostat",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Typescript rheostat is a www, mobile, and accessible slider component built with React",
   "keywords": [
     "typescript",
@@ -10,8 +10,7 @@
   ],
   "homepage": "https://github.com/artur-a/ts-rheostat",
   "bugs": "https://github.com/artur-a/ts-rheostat/issues",
-  "main": "lib/Rheostat.js",
-  "tsnext:main": "src/Rheostat.tsx",
+  "main": "lib/index.ts",
   "scripts": {
     "build": "node_modules/.bin/gulp less",
     "prepublish": "npm run build",
