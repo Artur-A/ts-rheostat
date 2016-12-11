@@ -5,7 +5,8 @@
   "keywords": [
     "typescript",
     "rheostat",
-    "ts-rheostat"
+    "ts-rheostat",
+    "slider"
   ],
   "homepage": "https://github.com/artur-a/ts-rheostat",
   "bugs": "https://github.com/artur-a/ts-rheostat/issues",
