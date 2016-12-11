@@ -1,0 +1,105 @@
+.rheostat {
+  overflow: visible;
+}
+
+.rheostat-background {
+  background-color: #fcfcfc;
+  border: 1px solid #d8d8d8;
+  position: relative;
+}
+
+.rheostat-progress {
+  background-color: #abc4e8;
+  position: absolute;
+}
+
+.rheostat-handle {
+  background-color: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius: 20%;
+  height: 24px;
+  outline: none;
+  z-index: 2;
+  width: 24px;
+
+    &:before,
+    &:after{
+        content: '';
+        display: block;
+        position: absolute;
+        background-color: #dadfe8;
+    }
+}
+
+
+.rheostat-horizontal {
+  height: 24px;
+    
+    .rheostat-background {
+        height: 15px;
+        top: 0px;
+        width: 100%;
+    }
+    .rheostat-progress {
+        height: 13px;
+        top: 2px;
+    }
+
+    .rheostat-handle {
+        margin-left: -12px;
+        top: -5px;
+
+        &:before,
+        &:after {
+            top: 7px;
+            height: 10px;
+            width: 1px;
+        }
+
+        &:before {
+            left: 10px;
+        }
+        &:after {
+            left: 13px;
+        }
+    }
+}
+
+
+
+
+.rheostat-vertical {
+    height: 100%;
+    min-height: 200px;
+    width: 24px;
+
+    .rheostat-background {
+        height: 100%;
+        top: 0px;
+        width: 15px;
+        position: absolute;
+    }
+
+    .rheostat-progress {
+        left: 2px;
+        width: 13px;
+    }
+    .rheostat-handle {
+        left: -5px;
+        margin-top: -12px;
+        &:before,
+        &:after {
+            left: 8px;
+            height: 1px;
+            width: 10px;
+        }
+        &:before {
+            top: 10px;
+        }
+        &:after {
+            top: 13px;
+        }
+    }
+}
+
+

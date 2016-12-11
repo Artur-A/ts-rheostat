@@ -1,41 +1,46 @@
+
+import 'jsdom-global/register';
+
+import * as mocha from "mocha";
 import { shallow, describeWithDOM, mount } from 'enzyme';
-import React from 'react';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import { assert } from 'chai';
-import has from 'has';
 
-import Slider from '../src/Slider';
-import { KEYS } from '../lib/constants/SliderConstants';
 
-function testKeys(slider, tests) {
-  Object.keys(tests).forEach((key) => {
-    const keyCode = KEYS[key];
-    const pos = tests[key];
-    assert(slider.getNextPositionForKey(0, keyCode) === pos, `${key}: ${pos}%`);
+import * as React from 'react';
+import Rheostat, {IRheostatProps} from "../src/Rheostat";
+import RheostatKeys from '../src/constants/RheostatKeys';
+import RheostatOrientation from '../src/constants/RheostatOrientation';
+
+
+const has = Object.prototype.hasOwnProperty;
+
+function testKeys(slider:any, tests: {key: RheostatKeys, expectedPos: number}[]) {
+  tests.forEach((test) => {
+      assert(slider.getNextPositionForKey(0, test.key) === test.expectedPos, `${test.key}: ${test.expectedPos}%`);    
   });
 }
+function newSlider(props?: any){ return new Rheostat({...Rheostat.defaultProps, ...props}) };
 
-const newSlider = props => new Slider({ ...Slider.defaultProps, ...props });
-
-describeWithDOM('<Slider />', () => {
+describe('<Rheostat />', () => {
   describe('render', () => {
     it('should render the slider with one handle by default', () => {
-      const wrapper = shallow(<Slider />);
+      const wrapper = shallow(<Rheostat />);
       assert(wrapper.find('.rheostat-handle').length === 1, 'no values one handle');
     });
 
     it('should render the slider with a single handle', () => {
-      const wrapper = shallow(<Slider values={[1]} />);
+      const wrapper = shallow(<Rheostat values={[1]} />);
       assert(wrapper.find('.rheostat-handle').length === 1, 'one handle is present');
     });
 
     it('should render the slider with as many handles as values', () => {
-      const wrapper = shallow(<Slider values={[0, 25, 50, 75, 100]} />);
+      const wrapper = shallow(<Rheostat values={[0, 25, 50, 75, 100]} />);
       assert(wrapper.find('.rheostat-handle').length === 5, 'five handles are present');
     });
 
     it('should render the slider with a bar', () => {
-      const wrapper = shallow(<Slider />);
+      const wrapper = shallow(<Rheostat />);
       assert(wrapper.find('.rheostat-progress').length === 1, 'the bar is present');
     });
 
@@ -44,10 +49,10 @@ describeWithDOM('<Slider />', () => {
 
       // eslint-disable-next-line
       const PitComponent = React.createClass({
-        render: pitRender,
+          render: pitRender
       });
 
-      mount(<Slider pitComponent={PitComponent} pitPoints={[0, 20]} />);
+      mount(<Rheostat pitComponent={PitComponent} pitPoints={[0, 20]} />);
 
       assert.isTrue(pitRender.calledTwice, 'two pits were rendered, one for each point');
     });
@@ -61,8 +66,8 @@ describeWithDOM('<Slider />', () => {
       });
 
       mount(
-        <Slider
-          orientation="vertical"
+        <Rheostat
+          orientation={RheostatOrientation.Vertical}
           pitComponent={PitComponent}
           pitPoints={[10]}
         />,
@@ -72,19 +77,19 @@ describeWithDOM('<Slider />', () => {
     });
   });
 
-  describe('componentWillReceiveProps', () => {
+  describe('componentWillReceiveProps', () => {    
     it('should re-evaluate the orientation when props change', () => {
-      const slider = mount(<Slider />);
-      assert(slider.props().orientation === 'horizontal', 'slider is horizontal');
+      const slider = mount(<Rheostat />);
+      assert(slider.props().orientation === RheostatOrientation.Horizontal, 'slider is horizontal');
       assert.include(
         slider.state('className'),
         'rheostat-horizontal',
         'cached class has horizontal',
       );
+       slider.setProps({ orientation: RheostatOrientation.Vertical });
 
-      slider.setProps({ orientation: 'vertical' });
-
-      assert(slider.props().orientation === 'vertical', 'slider was changed to vertical');
+      assert(slider.props().orientation === RheostatOrientation.Vertical, 'slider was changed to vertical');
+      
       assert.include(
         slider.state('className'),
         'rheostat-vertical',
@@ -94,7 +99,7 @@ describeWithDOM('<Slider />', () => {
 
     it('should not call onChange twice if values are the same as what is in state', () => {
       const onChange = sinon.spy();
-      const slider = mount(<Slider onChange={onChange} values={[0]} />);
+      const slider = mount(<Rheostat onChange={onChange} values={[0]} />);
 
       // programatically change values like if the slider was dragged
       slider.setState({ values: [10] });
@@ -106,7 +111,7 @@ describeWithDOM('<Slider />', () => {
 
     it('should not update values if we are sliding', () => {
       const onChange = sinon.spy();
-      const slider = mount(<Slider onChange={onChange} values={[0]} />);
+      const slider = mount(<Rheostat onChange={onChange} values={[0]} />);
 
       slider.setState({ slidingIndex: 0 });
 
@@ -117,7 +122,7 @@ describeWithDOM('<Slider />', () => {
 
     it('should not update values if they are the same', () => {
       const onChange = sinon.spy();
-      const slider = mount(<Slider onChange={onChange} values={[50]} />);
+      const slider = mount(<Rheostat onChange={onChange} values={[50]} />);
 
       slider.setProps({ values: [50] });
 
@@ -126,7 +131,7 @@ describeWithDOM('<Slider />', () => {
 
     it('should update values when they change', () => {
       const onChange = sinon.spy();
-      const slider = mount(<Slider onChange={onChange} values={[50]} />);
+      const slider = mount(<Rheostat onChange={onChange} values={[50]} />);
 
       slider.setProps({ values: [80] });
 
@@ -136,21 +141,21 @@ describeWithDOM('<Slider />', () => {
     });
 
     it('should move the values if the min is changed to be larger', () => {
-      const slider = shallow(<Slider values={[50]} />);
+      const slider = shallow(<Rheostat values={[50]} />);
       slider.setProps({ min: 80 });
 
       assert.include(slider.state('values'), 80, 'values was updated');
     });
 
     it('should move the values if the max is changed to be smaller', () => {
-      const slider = shallow(<Slider values={[50]} />);
+      const slider = shallow(<Rheostat values={[50]} />);
       slider.setProps({ max: 20 });
 
       assert.include(slider.state('values'), 20, 'values was updated');
     });
 
     it('should add handles', () => {
-      const slider = shallow(<Slider />);
+      const slider = shallow(<Rheostat />);
       assert(slider.state('values').length === 1, 'one handle exists');
       assert(slider.state('handlePos').length === 1, 'one handle exists');
 
@@ -165,15 +170,15 @@ describeWithDOM('<Slider />', () => {
   });
 });
 
-describe('Slider API', () => {
+describe('Rheostat API', () => {
   describe('getPublicState', () => {
     it('should only return min, max, and values from public state', () => {
       const slider = newSlider();
       const state = slider.getPublicState();
 
-      assert.isTrue(has(state, 'max'), 'max exists');
-      assert.isTrue(has(state, 'min'), 'min exists');
-      assert.isTrue(has(state, 'values'), 'values exists');
+      assert.isTrue(has.call(state, 'max'), 'max exists');
+      assert.isTrue(has.call(state, 'min'), 'min exists');
+      assert.isTrue(has.call(state, 'values'), 'values exists');
       assert(Object.keys(state).length === 3, 'only 3 properties are present');
     });
   });
@@ -183,8 +188,8 @@ describe('Slider API', () => {
       const slider = newSlider();
       const style = slider.getProgressStyle(0);
 
-      assert.isTrue(has(style, 'left'), 'left exists');
-      assert.isTrue(has(style, 'width'), 'width exists');
+      assert.isTrue(has.call(style, 'left'), 'left exists');
+      assert.isTrue(has.call(style, 'width'), 'width exists');
       assert(Object.keys(style).length === 2, 'only two properties exist');
     });
 
@@ -213,16 +218,16 @@ describe('Slider API', () => {
     });
 
     it('should get correct style for vertical slider', () => {
-      const slider = newSlider({ orientation: 'vertical' });
+      const slider = newSlider({ orientation: RheostatOrientation.Vertical });
       const style = slider.getProgressStyle(0);
 
-      assert.isTrue(has(style, 'top'), 'top exists');
-      assert.isTrue(has(style, 'height'), 'height exists');
+      assert.isTrue(has.call(style, 'top'), 'top exists');
+      assert.isTrue(has.call(style, 'height'), 'height exists');
       assert(Object.keys(style).length === 2, 'only two properties exist');
     });
 
     it('should get correct style for second handle and vertical slider', () => {
-      const slider = newSlider({ values: [50, 100], orientation: 'vertical' });
+      const slider = newSlider({ values: [50, 100], orientation: RheostatOrientation.Vertical });
       const style = slider.getProgressStyle(1);
 
       assert(style.top === '50%', 'progress bar starts at 50%');
@@ -266,7 +271,7 @@ describe('Slider API', () => {
       const slider = newSlider();
       assert(slider.getClosestSnapPoint(42) === 42, 'the closest point is 42');
     });
-  });
+   });
 
   describe('getSnapPosition', () => {
     it('should return the position if snap is false', () => {
@@ -292,12 +297,12 @@ describe('Slider API', () => {
         values: [50],
       });
 
-      testKeys(slider, {
-        LEFT: 49,
-        RIGHT: 51,
-        UP: 51,
-        DOWN: 49,
-      });
+      testKeys(slider, [
+        {key: RheostatKeys.LEFT, expectedPos: 49},
+        {key: RheostatKeys.RIGHT, expectedPos: 51},
+        {key: RheostatKeys.UP, expectedPos: 51},
+        {key: RheostatKeys.DOWN, expectedPos: 49},
+      ]);
     });
 
     it('should try to advance up to 10% when pressing page up/down', () => {
@@ -305,45 +310,32 @@ describe('Slider API', () => {
         values: [50],
       });
 
-      testKeys(slider, {
-        PAGE_UP: 60,
-        PAGE_DOWN: 40,
-      });
-    });
 
+       testKeys(slider, [
+        {key: RheostatKeys.PAGE_UP, expectedPos: 60},
+        {key: RheostatKeys.PAGE_DOWN, expectedPos: 40},
+      ]);
+    });
     it('should reach the start/end when pressing home/end', () => {
       const slider = newSlider({
         values: [50],
       });
 
-      testKeys(slider, {
-        HOME: 0,
-        END: 100,
-      });
-    });
-
-    it('overflows min', () => {
-      const slider = newSlider({
-        values: [0],
-      });
-
-      testKeys(slider, {
-        PAGE_DOWN: -10,
-        LEFT: -1,
-        HOME: 0,
-      });
+       testKeys(slider, [
+        {key: RheostatKeys.HOME, expectedPos: 0},
+        {key: RheostatKeys.END, expectedPos: 100},
+      ]);
     });
 
     it('overflows max', () => {
       const slider = newSlider({
         values: [100],
-      });
-
-      testKeys(slider, {
-        END: 100,
-        RIGHT: 101,
-        PAGE_UP: 110,
-      });
+      }); 
+      testKeys(slider, [
+        {key: RheostatKeys.END, expectedPos: 100},
+        {key: RheostatKeys.RIGHT, expectedPos: 101},
+        {key: RheostatKeys.PAGE_UP, expectedPos: 110},
+      ]);
     });
 
     it('should increment by value on a really small scale', () => {
@@ -352,30 +344,29 @@ describe('Slider API', () => {
         values: [2],
       });
 
-      testKeys(slider, {
-        END: 100,
-        RIGHT: 60,
-        PAGE_UP: 60,
-        PAGE_DOWN: 20,
-        LEFT: 20,
-        HOME: 0,
-      });
+      testKeys(slider, [
+        {key: RheostatKeys.END, expectedPos: 100},
+        {key: RheostatKeys.RIGHT, expectedPos: 60},
+        {key: RheostatKeys.PAGE_UP, expectedPos: 60},
+        {key: RheostatKeys.PAGE_DOWN, expectedPos: 20},
+        {key: RheostatKeys.LEFT, expectedPos: 20},
+        {key: RheostatKeys.HOME, expectedPos: 0},
+      ]);
     });
-
     it('should handle large scales well', () => {
       const slider = newSlider({
         max: 1e9,
         values: [5e8],
       });
 
-      testKeys(slider, {
-        END: 100,
-        RIGHT: 51,
-        PAGE_UP: 60,
-        PAGE_DOWN: 40,
-        LEFT: 49,
-        HOME: 0,
-      });
+      testKeys(slider, [
+        {key: RheostatKeys.END, expectedPos: 100},
+        {key: RheostatKeys.RIGHT, expectedPos: 51},
+        {key: RheostatKeys.PAGE_UP, expectedPos: 60},
+        {key: RheostatKeys.PAGE_DOWN, expectedPos: 40},
+        {key: RheostatKeys.LEFT, expectedPos: 49},
+        {key: RheostatKeys.HOME, expectedPos: 0},
+      ]);
     });
 
     it('should snap to a value if snap is set', () => {
@@ -385,14 +376,14 @@ describe('Slider API', () => {
         values: [40],
       });
 
-      testKeys(slider, {
-        END: 80,
-        RIGHT: 60,
-        PAGE_UP: 60,
-        PAGE_DOWN: 20,
-        LEFT: 20,
-        HOME: 10,
-      });
+      testKeys(slider, [
+        {key: RheostatKeys.END, expectedPos: 80},
+        {key: RheostatKeys.RIGHT, expectedPos: 60},
+        {key: RheostatKeys.PAGE_UP, expectedPos: 60},
+        {key: RheostatKeys.PAGE_DOWN, expectedPos: 20},
+        {key: RheostatKeys.LEFT, expectedPos: 20},
+        {key: RheostatKeys.HOME, expectedPos: 10},
+      ]);
     });
 
     it('should not overflow min with snap', () => {
@@ -402,11 +393,11 @@ describe('Slider API', () => {
         values: [10],
       });
 
-      testKeys(slider, {
-        LEFT: 10,
-        PAGE_DOWN: 10,
-        HOME: 10,
-      });
+      testKeys(slider, [
+        {key: RheostatKeys.LEFT, expectedPos: 10},
+        {key: RheostatKeys.PAGE_DOWN, expectedPos: 10},
+        {key: RheostatKeys.HOME, expectedPos: 10},
+      ]);
     });
 
     it('should not overflow max with snap', () => {
@@ -416,16 +407,17 @@ describe('Slider API', () => {
         values: [80],
       });
 
-      testKeys(slider, {
-        RIGHT: 80,
-        PAGE_UP: 80,
-        END: 80,
-      });
+  
+      testKeys(slider, [
+        {key: RheostatKeys.RIGHT, expectedPos: 80},
+        {key: RheostatKeys.PAGE_UP, expectedPos: 80},
+        {key: RheostatKeys.END, expectedPos: 80},
+      ]);
     });
 
     it('should return null for escape', () => {
       const slider = newSlider();
-      assert.isNull(slider.getNextPositionForKey(0, KEYS.ESC));
+      assert.isUndefined(slider.getNextPositionForKey(0, RheostatKeys.ESC));
     });
   });
 
@@ -522,7 +514,6 @@ describe('Slider API', () => {
     });
   });
 
-  // XXX maybe I can combine some of the overflow logic in some places?
   describe('canMove', () => {
     it('should confirm that we can move to the proposed position', () => {
       const slider = newSlider({

@@ -1,2 +1,7 @@
+.storybook
+.vscode
 coverage
-build
+node_modules
+stories
+temp
+test

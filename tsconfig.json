@@ -1,0 +1,30 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": ".",    
+    "rootDir": ".",
+    "module": "commonjs",    
+    "moduleResolution": "node",
+    "outDir": "./temp/",
+    "noEmit": false,
+    "noEmitOnError": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": false,
+    "strictNullChecks": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": [
+      "node_modules/@types/"
+    ],
+    "allowUnreachableCode": false,
+    "experimentalDecorators": true,
+    "removeComments": true
+  }, 
+  "exclude": [
+    "node_modules"
+  ]
+}
