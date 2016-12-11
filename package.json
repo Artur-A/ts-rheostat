@@ -1,6 +1,6 @@
 {
   "name": "ts-rheostat",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Typescript rheostat is a www, mobile, and accessible slider component built with React",
   "keywords": [
     "typescript",
