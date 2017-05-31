@@ -2,13 +2,14 @@
   "compileOnSave": true,
   "compilerOptions": {
     "baseUrl": ".",    
-    "rootDir": ".",
+    "rootDir": "./src/",
+    "outDir": "./lib/",
     "module": "commonjs",    
     "moduleResolution": "node",
-    "outDir": "./temp/",
     "noEmit": false,
     "noEmitOnError": true,
     "sourceMap": true,
+    "declaration": true,
     "noImplicitAny": true,
     "target": "es5",
     "jsx": "react",
@@ -25,6 +26,8 @@
     "removeComments": true
   }, 
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "stories",
+    "test"
   ]
 }

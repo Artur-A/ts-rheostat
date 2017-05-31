@@ -8,7 +8,7 @@ import Linear from "./algorithms/Linear";
 import IAlgorithm from "./algorithms/IAlgorithm";
 
 
-interface IRheostatProps{
+export interface IRheostatProps{
   // the algorithm to use
   algorithm?: IAlgorithm,
   // standard class name you'd like to apply to the root element
@@ -52,7 +52,7 @@ interface IRheostatProps{
   values?: number[],
 }
 
-interface RheostatState {
+export interface RheostatState {
   className: string,
   handlePos: number[],
   handleDimensions: number,
@@ -296,15 +296,18 @@ class Rheostat extends React.Component<IRheostatProps, RheostatState> {
     const originalPercentage = proposedPercentage;
     let stepValue = 1;
 
-    if (this.props.max >= 100) {
+    const max = this.props.max || 0;
+    const min = this.props.min || 0;
+    
+    if (max >= 100) {
       proposedPercentage = Math.round(proposedPercentage);
     } else {
-      stepValue = 100 / (this.props.max - this.props.min);
+      stepValue = 100 / (max - min);
     }
 
     let currentIndex = shouldSnap
                        ? this.getSnapPointsPropOrDefault().indexOf(this.getClosestSnapPoint(values[idx]))
-                       : undefined;
+                       : 0;
 
     const stepMultiplier = {
       [RheostatKeys.LEFT]: function(v:number){ return v * -1},
@@ -756,26 +759,25 @@ class Button extends React.Component<React.HTMLProps<HTMLButtonElement>,{}> {
   }
 }
 
-interface IBoundingBox{
+export interface IBoundingBox{
   width: number;
   height: number;
   top: number;
   left: number;
 }
-interface IMousePosition{
+export interface IMousePosition{
   x: number;
   y: number;
 }
-interface IRheostatPublicState{
+export interface IRheostatPublicState{
     max: number,
     min: number,
     values: number[]
 }
 
-interface IClassicComponentClass{
+export interface IClassicComponentClass{
   new (props?: any, context?: any): React.ClassicComponent<any, React.ComponentState>;
 }
 
 
 export default Rheostat;
-export { IRheostatProps, IRheostatPublicState};

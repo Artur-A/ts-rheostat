@@ -1,7 +1,0 @@
-.storybook
-.vscode
-coverage
-node_modules
-stories
-temp
-test
